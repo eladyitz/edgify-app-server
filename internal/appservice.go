@@ -22,25 +22,35 @@ func NewAppService(cfg *viper.Viper, exc ExecClient) *gin.Engine {
 		cfg: cfg,
 		execClient: exc,
 	}
-	engine := gin.New()
-
-	// liveness without auth
-	engine.GET("/liveness")
+	engine := gin.Default()
 
 	// v1 api group
 	g := engine.Group("v1")
 
-	// basic authentication
-	ba := gin.BasicAuth(map[string]string{cfg.GetString(CfgAuthUser): cfg.GetString(CfgAuthPass)})
-
+	// liveness without auth
+	engine.GET("/liveness")
+	
 	// endpoints
-	g.POST("order", ba, handleErr(svc.postOrder))
+	g.POST("/order", svc.basicAuth, handleErr(svc.postOrder))
 	return engine
+}
+
+func (s *appService) basicAuth(c *gin.Context) {
+	// verify the Basic Authentication credentials
+	user, password, hasAuth := c.Request.BasicAuth()
+	if !hasAuth || user != s.cfg.GetString(CfgAuthUser) || password != s.cfg.GetString(CfgAuthPass) {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	log.V(1).Info("request for order authenticated")
 }
 
 func validateBody(c *gin.Context) (*OrderRequest, error) {
 	if c.Request.Body == nil {
-		abortWithMessage(c, http.StatusBadRequest, "must provide budy")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		_, _ = c.Writer.WriteString("must provide budy")
+		c.AbortWithStatus(http.StatusBadRequest)
 		return nil, fmt.Errorf("request body is empty")
 	}
 	orq := OrderRequest{}
@@ -49,12 +59,6 @@ func validateBody(c *gin.Context) (*OrderRequest, error) {
 		return nil, err
 	}
 	return &orq, nil
-}
-
-func abortWithMessage(c *gin.Context, code int, msg string) {
-	c.Writer.WriteHeader(code)
-	_, _ = c.Writer.WriteString(msg)
-	c.AbortWithStatus(code)
 }
 
 // a wrapper that allows custom gin handlers to return errors

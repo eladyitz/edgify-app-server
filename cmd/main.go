@@ -20,14 +20,21 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	cfg.SetDefault(internal.CfgExecPostTimeOut, internal.DefExecPostTimeOut)
+	
+	// set configuraion defaults
 	cfg.SetDefault(internal.CfgPostTimeOut, internal.DefPostTimeOut)
 	cfg.SetDefault(internal.CfgPort, internal.DefPort)
+	cfg.SetDefault(internal.CfgExecPostTimeOut, internal.DefExecPostTimeOut)
+	cfg.SetDefault(internal.CfgExecBufferSize, internal.DefExecBufferSize)
+	cfg.SetDefault(internal.CfgExecSampleInterval, internal.DefExecSampleInterval)
+	cfg.SetDefault(internal.CfgExecServerUrl, internal.DefExecServerUrl)
+	cfg.SetDefault(internal.CfgAuthUser, internal.DefAuthUser)
+	cfg.SetDefault(internal.CfgAuthPass, internal.DefAuthPass)
 
 	// init Exec Client
-	stopCh := make(chan struct{})
+	stopCh := make(chan struct{}, 1)
 	defer close(stopCh)
-	execClient := internal.NewExecClient(stopCh)
+	execClient := internal.NewExecClient(cfg, stopCh)
 	execClient.Run()
 
 	// init App Service

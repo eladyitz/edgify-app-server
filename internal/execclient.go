@@ -21,7 +21,7 @@ type execClient struct {
 	bOrders chan(orderWithChan)
 }
 
-func NewExecClientCB(cfg *viper.Viper, stopCh chan(struct{})) ExecClient {
+func NewExecClient(cfg *viper.Viper, stopCh chan(struct{})) ExecClient {
 	return &execClient{
 		stopCh: stopCh,
 		cfg: cfg,
@@ -36,8 +36,8 @@ func (e* execClient) Run() {
 func (e* execClient) ProcessOrder(orq OrderRequest) OrderStatus {
 	// create channels for status and error of the clients request
 	ors := OrderStatus{
-		Status: make(chan(Status)),
-		Error: make(chan(error)),
+		Status: make(chan(Status), 1),
+		Error: make(chan(error), 1),
 	}
 
 	go func() {
@@ -61,7 +61,7 @@ func (e* execClient) runClient() {
 				for _, orw := range orws {
 					orw.Error <- fmt.Errorf("exec client process was stopped")
 				}
-				break
+				return
 			// in case there is an order in the buffer
 			case or := <-e.bOrders:
 				orws = append(orws, or)
@@ -85,7 +85,7 @@ func (e* execClient) fulfillOrders(orws []orderWithChan) {
 			orw.Error <- err
 		}
 	}
-	
+
 	// update status channels if approved or rejected
 	for _, orw := range orws {
 		for _, orp := range orps {
@@ -104,13 +104,13 @@ func (e* execClient) queryExecServer(orws []orderWithChan) ([]OrderResponse, err
 		or = append(or, orw.OrderRequest)
 	}
 	if err := json.NewEncoder(b).Encode(or); err != nil {
-		return nil, fmt.Errorf("can't encode orders, ", err)
+		return nil, fmt.Errorf("can't encode orders, %s", err)
 	}
 
 	// POST request the server
 	resp, err := http.Post(fmt.Sprintf("%s/fulfillorder", e.cfg.GetString(CfgExecServerUrl)), "application/json", b)
 	if err != nil {
-		return nil, fmt.Errorf("can't POST exec server, ", err)
+		return nil, fmt.Errorf("can't POST exec server, %s", err)
 	}
 	defer resp.Body.Close()
 	
@@ -122,7 +122,7 @@ func (e* execClient) queryExecServer(orws []orderWithChan) ([]OrderResponse, err
 	// decode to OrderResponse slice
 	orp := []OrderResponse{}
 	if err := json.NewDecoder(resp.Body).Decode(&orp); err != nil {
-		return nil, fmt.Errorf("can't decode response from exec server, ", err)
+		return nil, fmt.Errorf("can't decode response from exec server, %s", err)
 	}
 	return orp, nil
 }

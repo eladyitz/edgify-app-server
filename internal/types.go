@@ -4,23 +4,23 @@ const (
 	APPROVED = "approved"
 	REJECTED = "rejected"
 
+	CfgPort = "port"
+	DefPort = 9000
+
 	CfgPostTimeOut = "timeout"
 	DefPostTimeOut = "15s"
 
 	CfgExecPostTimeOut = "exec.timeout"
 	DefExecPostTimeOut = "15s"
-
-	CfgPort = "port"
-	DefPort = 9000
-
+	
 	CfgExecBufferSize = "exec.bufferSize"
 	DefExecBufferSize = 10
 
 	CfgExecSampleInterval = "exec.sampleInterval"
-	defExecSampleInterval = 100
+	DefExecSampleInterval = 100
 
 	CfgExecServerUrl = "exec.serverUrl"
-	defExecServerUrl = "http://localhost:8081"
+	DefExecServerUrl = "http://localhost:8081"
 
 	CfgAuthUser = "auth.user"
 	DefAuthUser = "admin"
@@ -30,10 +30,6 @@ const (
 )
 
 type Status string
-
-type AppService interface {
-
-}
 
 type OrderRequest struct {
 	Price uint `json:"price"`
@@ -53,9 +49,4 @@ type ExecClient interface {
 type OrderStatus struct {
 	Status chan Status
 	Error chan error
-}
-
-type FifoQueue interface {
-    Insert(interface{}) error
-    RemoveNValues() error
 }

@@ -14,8 +14,8 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
-	. "github.wdf.sap.corp/i350641/edgify-app-server/internal"
-	. "github.wdf.sap.corp/i350641/edgify-app-server/internal/genmocks"
+	. "github.com/i350641/edgify-app-server/internal"
+	. "github.com/i350641/edgify-app-server/internal/genmocks"
 )
 
 var _ = Describe("The filter", func() {

@@ -9,8 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
 	"github.com/spf13/viper"
-	. "github.wdf.sap.corp/i350641/edgify-app-server/internal"
-	// . "github.wdf.sap.corp/i350641/edgify-app-server/internal/genmocks"
+	. "github.com/i350641/edgify-app-server/internal"
 )
 
 var _ = Describe("exec client tests", func() {

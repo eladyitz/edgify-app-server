@@ -11,11 +11,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
+	. "github.com/i350641/edgify-app-server/internal"
+	. "github.com/i350641/edgify-app-server/internal/genmocks"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/spf13/viper"
-	. "github.com/i350641/edgify-app-server/internal"
-	. "github.com/i350641/edgify-app-server/internal/genmocks"
 )
 
 var _ = Describe("The filter", func() {

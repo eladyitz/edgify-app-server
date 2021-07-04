@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	internal "github.wdf.sap.corp/i350641/edgify-app-server/internal"
+	internal "github.com/i350641/edgify-app-server/internal"
 )
 
 // MockExecClient is a mock of ExecClient interface.

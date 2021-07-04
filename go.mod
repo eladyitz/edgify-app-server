@@ -1,4 +1,4 @@
-module github.wdf.sap.corp/i350641/edgify-app-server
+module github.com/i350641/edgify-app-server
 
 go 1.15
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/i350641/edgify-app-server/internal"
 	"github.com/spf13/viper"
-	"github.wdf.sap.corp/i350641/edgify-app-server/internal"
 	log "k8s.io/klog"
 )
 

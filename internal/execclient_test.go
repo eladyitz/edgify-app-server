@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"time"
 
+	. "github.com/i350641/edgify-app-server/internal"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
 	"github.com/spf13/viper"
-	. "github.com/i350641/edgify-app-server/internal"
 )
 
 var _ = Describe("exec client tests", func() {

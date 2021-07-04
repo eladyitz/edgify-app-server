@@ -12,7 +12,7 @@ const (
 
 	CfgExecPostTimeOut = "exec.timeout"
 	DefExecPostTimeOut = "15s"
-	
+
 	CfgExecBufferSize = "exec.bufferSize"
 	DefExecBufferSize = 10
 
@@ -20,7 +20,7 @@ const (
 	DefExecSampleInterval = 100
 
 	CfgExecServerUrl = "exec.serverUrl"
-	DefExecServerUrl = "http://localhost:8081"
+	DefExecServerUrl = "http://localhost:9081"
 
 	CfgAuthUser = "auth.user"
 	DefAuthUser = "admin"
@@ -32,7 +32,7 @@ const (
 type Status string
 
 type OrderRequest struct {
-	Price uint `json:"price"`
+	Price uint   `json:"price"`
 	Order string `json:"order"`
 }
 
@@ -48,5 +48,5 @@ type ExecClient interface {
 
 type OrderStatus struct {
 	Status chan Status
-	Error chan error
+	Error  chan error
 }

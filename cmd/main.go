@@ -20,7 +20,7 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	
+
 	// set configuraion defaults
 	cfg.SetDefault(internal.CfgPostTimeOut, internal.DefPostTimeOut)
 	cfg.SetDefault(internal.CfgPort, internal.DefPort)

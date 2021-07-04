@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	log "k8s.io/klog"
 	"net/http"
 	"time"
-	log "k8s.io/klog"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -19,7 +19,7 @@ type appService struct {
 
 func NewAppService(cfg *viper.Viper, exc ExecClient) *gin.Engine {
 	svc := appService{
-		cfg: cfg,
+		cfg:        cfg,
 		execClient: exc,
 	}
 	engine := gin.Default()
@@ -29,7 +29,7 @@ func NewAppService(cfg *viper.Viper, exc ExecClient) *gin.Engine {
 
 	// liveness without auth
 	engine.GET("/liveness")
-	
+
 	// endpoints
 	g.POST("/order", svc.basicAuth, handleErr(svc.postOrder))
 	return engine
@@ -84,27 +84,27 @@ func (s *appService) waitForRequest(c *gin.Context, or OrderRequest) error {
 	// get Order status and error channels
 	ors := s.execClient.ProcessOrder(or)
 	select {
-		// case there is an error in request processing return 500
-		case err := <-ors.Error:
-			return fmt.Errorf("can't process order %s", err)
-		// case request was fulfilled return 200 with sattus on body
-		case status := <-ors.Status:
-			orr := OrderResponse{or, status}
-			b := new(bytes.Buffer)
-			if err := json.NewEncoder(b).Encode(orr); err != nil {
-				return fmt.Errorf("can't encode request %s", err)
-			}
+	// case there is an error in request processing return 500
+	case err := <-ors.Error:
+		return fmt.Errorf("can't process order %s", err)
+	// case request was fulfilled return 200 with sattus on body
+	case status := <-ors.Status:
+		orr := OrderResponse{or, status}
+		b := new(bytes.Buffer)
+		if err := json.NewEncoder(b).Encode(orr); err != nil {
+			return fmt.Errorf("can't encode request %s", err)
+		}
 
-			switch status {
-				case APPROVED:
-				case REJECTED:
-					c.String(http.StatusOK, b.String())
-				default:
-					return fmt.Errorf("status returend from exec client was not approved or rejected")
-			}
-		// case request hit timeout (long process or lack of getting to 10 requests) return 408
-		case <-time.After(s.cfg.GetDuration(CfgPostTimeOut)):
-			c.String(http.StatusRequestTimeout, "")
+		switch status {
+		case APPROVED:
+		case REJECTED:
+			c.String(http.StatusOK, b.String())
+		default:
+			return fmt.Errorf("status returend from exec client was not approved or rejected")
+		}
+	// case request hit timeout (long process or lack of getting to 10 requests) return 408
+	case <-time.After(s.cfg.GetDuration(CfgPostTimeOut)):
+		c.String(http.StatusRequestTimeout, "")
 	}
-	return nil	
-} 
+	return nil
+}

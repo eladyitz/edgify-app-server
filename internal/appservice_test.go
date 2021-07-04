@@ -45,14 +45,14 @@ var _ = Describe("The filter", func() {
 		req = nil
 		resp = httptest.NewRecorder()
 		postUrl = "/v1/order"
-		postBody = OrderRequest {
+		postBody = OrderRequest{
 			Price: 100,
 			Order: "stam",
 		}
 		postBodyBytes, _ = json.Marshal(postBody)
 		ors = OrderStatus{
-			Status: make(chan(Status), 1),
-			Error: make(chan(error), 1),
+			Status: make(chan (Status), 1),
+			Error:  make(chan (error), 1),
 		}
 	})
 	AfterEach(func() {
